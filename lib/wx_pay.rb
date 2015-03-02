@@ -4,7 +4,7 @@ require 'wx_pay/service'
 
 module WxPay
   class<< self
-    attr_accessor :appid, :mch_id, :key
+    attr_accessor :appid, :mch_id, :key, :debug_mode
 
     def extra_rest_client_options=(options)
       @rest_client_options = options
@@ -12,6 +12,10 @@ module WxPay
 
     def extra_rest_client_options
       @rest_client_options || {}
+    end
+
+    def debug_mode?
+      !!@debug_mode
     end
   end
 end

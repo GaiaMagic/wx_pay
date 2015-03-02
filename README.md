@@ -36,6 +36,7 @@ Create `config/initializers/wx_pay.rb` and put following configurations into it.
 WxPay.appid = 'YOUR_APPID'
 WxPay.key = 'YOUR_KEY'
 WxPay.mch_id = 'YOUR_MCH_ID'
+WxPay.debug_mode = true # default is `false`
 
 # optional - configurations for RestClient timeout, etc.
 WxPay.extra_rest_client_options = {timeout: 2, open_timeout: 3}
