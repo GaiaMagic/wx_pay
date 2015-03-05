@@ -22,6 +22,23 @@ module WxPay
       r
     end
 
+    CLOSE_ORDER_REQUIRED_FIELDS = %i(out_trade_no)
+    def self.close_order(params)
+      params = {
+        appid: WxPay.appid,
+        mch_id: WxPay.mch_id,
+        nonce_str: SecureRandom.uuid.tr('-', ''),
+      }.merge(params)
+
+      check_required_options(params, CLOSE_ORDER_REQUIRED_FIELDS)
+
+      r = invoke_remote("#{GATEWAY_URL}/closeorder", make_payload(params))
+
+      yield r if block_given?
+
+      r
+    end
+
     private
 
     def self.check_required_options(options, names)
@@ -44,11 +61,7 @@ module WxPay
         }.merge(WxPay.extra_rest_client_options)
       )
 
-      if r
-        WxPay::Result.new Hash.from_xml(r)
-      else
-        nil
-      end
+      r && WxPay::Result.new(Hash.from_xml(r))
     end
   end
 end
