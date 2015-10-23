@@ -3,23 +3,12 @@ class ServiceTest < MiniTest::Test
 
   # TODO why put the params of refun in setup method
   def setup
-    @params = {
-      transaction_id: '1217752501201407033233368018',
-      op_user_id: '10000100',
-      out_refund_no: '1415701182',
-      out_trade_no: '1415757673',
-      refund_fee: 1,
-      total_fee: 1
-    }
-
     @apiclient_cert = Minitest::Mock.new
     @apiclient_cert.expect(:certificate, 'certificate')
     @apiclient_cert.expect(:key, 'key')
   end
 
   def test_invoke_refund
-
-
     response_body = <<-EOF
      <xml>
        <return_code><![CDATA[SUCCESS]]></return_code>
@@ -46,7 +35,49 @@ class ServiceTest < MiniTest::Test
     )
 
     WxPay.stub :apiclient_cert, @apiclient_cert do
-      r = WxPay::Service.invoke_refund(@params)
+      r = WxPay::Service.invoke_refund(
+        transaction_id: '1217752501201407033233368018',
+        op_user_id: '10000100',
+        out_refund_no: '1415701182',
+        out_trade_no: '1415757673',
+        refund_fee: 1,
+        total_fee: 1
+      )
+
+      assert_equal r.success?, true
+    end
+  end
+
+  def test_invoke_merchant_pay
+    response_body = <<-EOF
+      <xml>
+        <return_code><![CDATA[SUCCESS]]></return_code>
+        <return_msg><![CDATA[]]></return_msg>
+        <mch_appid><![CDATA[wxec38b8ff840bd989]]></mch_appid>
+        <mchid><![CDATA[10013274]]></mchid>
+        <device_info><![CDATA[]]></device_info>
+        <nonce_str><![CDATA[lxuDzMnRjpcXzxLx0q]]></nonce_str>
+        <result_code><![CDATA[SUCCESS]]></result_code>
+        <partner_trade_no><![CDATA[10013574201505191526582441]]></partner_trade_no>
+        <payment_no><![CDATA[1000018301201505190181489473]]></payment_no>
+        <payment_time><![CDATA[2015-05-19 15:26:59]]></payment_time>
+      </xml>
+    EOF
+
+    FakeWeb.register_uri(
+      :post,
+      %r|https://api\.mch\.weixin\.qq\.com*|,
+      body: response_body
+    )
+
+    WxPay.stub :apiclient_cert, @apiclient_cert do
+      r = WxPay::Service.invoke_merchant_pay(
+        partner_trade_no: 'partner_trade_no',
+        openid: 'openid',
+        amount: 100,
+        desc: 'desc',
+        spbill_create_ip: '127.0.0.1'
+      )
       assert_equal r.success?, true
     end
   end

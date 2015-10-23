@@ -107,6 +107,30 @@ Return true if both `return_code` and `result_code` equal `SUCCESS`
 r.success? # => true
 ```
 
+#### merchant pay（企业付款）
+```ruby
+params = {
+  partner_trade_no: 'partner_trade_no',
+  openid: 'openid',
+  amount: 100,
+  desc: 'desc',
+  spbill_create_ip: '127.0.0.1'
+}
+r = WxPay::Service.invoke_merchant_pay params
+# => {
+#      "return_code"=>"SUCCESS",
+#      "return_msg"=>"OK",
+#      "mch_appid"=>"YOUR APPID",
+#      "mchid"=>"YOUR MCH_ID",
+#      "nonce_str"=>"8RN7YfTZ3OUgWX5e",
+#      "device_info"=>"device_info",
+#      "result_code"=>"SUCCESS",
+#      "partner_trade_no"=>"partner_trade_no",
+#      "payment_no"=>"payment_no"
+#      "payment_time"=>"2015-05-19 15:26:59"
+#    }
+```
+
 #### pay request for app
 
 ```ruby

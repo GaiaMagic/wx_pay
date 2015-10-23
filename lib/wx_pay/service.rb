@@ -66,6 +66,29 @@ module WxPay
       r
     end
 
+    INVOKE_MERCHANT_PAY_FIELDS = %i(partner_trade_no openid amount desc spbill_create_ip)
+    def self.invoke_merchant_pay(params)
+      params = {
+        mch_appid: WxPay.appid,
+        mchid: WxPay.mch_id,
+        nonce_str: SecureRandom.uuid.tr('-', ''),
+        check_name: 'NO_CHECK'
+      }.merge(params)
+
+      check_required_options(params, INVOKE_MERCHANT_PAY_FIELDS)
+
+      WxPay.extra_rest_client_options = {
+        ssl_client_cert: WxPay.apiclient_cert.certificate,
+        ssl_client_key: WxPay.apiclient_cert.key,
+        verify_ssl: OpenSSL::SSL::VERIFY_NONE
+      }
+
+      r = invoke_remote "#{GATEWAY_URL}/mmpaymkttransfers/promotion/transfers", make_payload(params)
+
+      yield(r) if block_given?
+
+      r
+    end
 
     private
 
